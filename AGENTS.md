@@ -1,0 +1,1 @@
+Do not implement features outside the scope of a phase without explicit user instruction. Follow 01_PROJECT_DESCRIPTION.md and 02_DATABASE_AI_TECHSTACK.md as the source of truth. Wait for explicit per-file or per-feature instructions before writing implementation code.

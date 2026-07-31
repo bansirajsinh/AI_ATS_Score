@@ -1,0 +1,1 @@
+// TODO: ScoreResult.js — do not implement yet

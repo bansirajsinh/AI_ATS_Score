@@ -1,0 +1,116 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz()
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz()
+
+  resumes         Resume[]
+  jobDescriptions JobDescription[]
+
+  @@map("users")
+}
+
+model Resume {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String?  @map("user_id") @db.Uuid
+  rawText   String   @map("raw_text")
+  fileName  String   @map("file_name")
+  fileUrl   String   @default("") @map("file_url")
+  fileHash  String   @map("file_hash")
+  fileSize  Int      @map("file_size")
+  mimeType  String   @map("mime_type")
+  version   Int      @default(1)
+  sections  Json?    @default("{}")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user       User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  embeddings ResumeEmbedding[]
+  scores     Score[]
+
+  @@index([userId])
+  @@index([createdAt(sort: Desc)])
+  @@index([fileHash])
+  @@map("resumes")
+}
+
+model ResumeEmbedding {
+  id        String                    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resumeId  String                    @map("resume_id") @db.Uuid
+  section   String
+  content   String
+  embedding Unsupported("vector(1536)")
+  createdAt DateTime                  @default(now()) @map("created_at") @db.Timestamptz()
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+  @@map("resume_embeddings")
+}
+
+model JobDescription {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String?  @map("user_id") @db.Uuid
+  rawText           String   @map("raw_text")
+  sourceUrl         String?  @map("source_url")
+  extractedKeywords Json?    @map("extracted_keywords") @db.JsonB
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scores Score[]
+
+  @@index([userId])
+  @@map("job_descriptions")
+}
+
+model Score {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  resumeId          String   @map("resume_id") @db.Uuid
+  jobId             String?  @map("job_id") @db.Uuid
+  overallScore      Decimal? @map("overall_score") @db.Decimal(5, 2)
+  parseabilityScore Decimal? @map("parseability_score") @db.Decimal(5, 2)
+  keywordScore      Decimal? @map("keyword_score") @db.Decimal(5, 2)
+  contentScore      Decimal? @map("content_score") @db.Decimal(5, 2)
+  formattingScore   Decimal? @map("formatting_score") @db.Decimal(5, 2)
+  report            Json?    @db.JsonB
+  status            String   @default("pending")
+  errorMessage      String?  @map("error_message")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz()
+
+  resume         Resume          @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobDescription JobDescription? @relation(fields: [jobId], references: [id])
+  keywordMatches KeywordMatch[]
+
+  @@index([resumeId])
+  @@index([jobId])
+  @@index([createdAt(sort: Desc)])
+  @@index([status])
+  @@map("scores")
+}
+
+model KeywordMatch {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  scoreId    String  @map("score_id") @db.Uuid
+  keyword    String
+  matchType  String  @map("match_type") // 'exact', 'semantic', 'missing'
+  similarity Decimal? @db.Decimal(5, 4)
+  resumeSection String? @map("resume_section")
+  suggestedPlacement String? @map("suggested_placement")
+
+  score Score @relation(fields: [scoreId], references: [id], onDelete: Cascade)
+
+  @@index([scoreId])
+  @@map("keyword_matches")
+}

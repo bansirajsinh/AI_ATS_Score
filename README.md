@@ -1,0 +1,1 @@
+# ResumeIQ (AI-Powered ATS Resume Score Checker)\n\nReferences:\n- [Project Description](docs/01_PROJECT_DESCRIPTION.md)\n- [Tech Stack](docs/02_DATABASE_AI_TECHSTACK.md)\n- [Setup Guide](docs/00_TOOLS_SETUP_GUIDE.md)

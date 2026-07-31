@@ -1,0 +1,116 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50: #eef2ff;
+  --color-brand-100: #e0e7ff;
+  --color-brand-200: #c7d2fe;
+  --color-brand-300: #a5b4fc;
+  --color-brand-400: #818cf8;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+  --color-brand-900: #312e81;
+
+  /* Richer, deeper dark mode colors */
+  --color-surface: #070b14; /* Deeper navy/black */
+  --color-surface-raised: #111726;
+  --color-surface-overlay: #1e293b;
+  
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #cbd5e1;
+  --color-text-muted: #94a3b8;
+
+  --color-score-excellent: #10b981;
+  --color-score-competitive: #34d399;
+  --color-score-needs-work: #fbbf24;
+  --color-score-high-risk: #f43f5e;
+
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Outfit', system-ui, -apple-system, sans-serif;
+
+  /* Custom animations for the dynamic UI */
+  --animate-blob: blob 15s infinite alternate;
+  --animate-tilt: tilt 10s infinite linear;
+  --animate-glow: glow 2s ease-in-out infinite alternate;
+  --animate-float: float 6s ease-in-out infinite;
+}
+
+/* Base resets and fonts */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom Glassmorphism Utilities */
+.glass-panel {
+  @apply bg-surface-raised/40 backdrop-blur-2xl border border-white/5 shadow-2xl;
+}
+
+.glass-card {
+  @apply bg-white/[0.02] backdrop-blur-xl border border-white/5 rounded-2xl shadow-2xl transition-all duration-300;
+}
+.glass-card:hover {
+  @apply bg-white/[0.04] border-white/10 shadow-brand-500/20 transform -translate-y-1;
+}
+
+/* Animations */
+@keyframes blob {
+  0% { transform: translate(0px, 0px) scale(1); }
+  33% { transform: translate(30px, -50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0px, 0px) scale(1); }
+}
+
+@keyframes tilt {
+  0%, 50%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(0.5deg); }
+  75% { transform: rotate(-0.5deg); }
+}
+
+@keyframes glow {
+  from { box-shadow: 0 0 10px rgba(99, 102, 241, 0.2); }
+  to { box-shadow: 0 0 20px rgba(99, 102, 241, 0.6); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+.animation-delay-4000 {
+  animation-delay: 4s;
+}
+
+/* Glowing text utility */
+.text-glow {
+  text-shadow: 0 0 20px rgba(165, 180, 252, 0.5);
+}
